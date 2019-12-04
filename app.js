@@ -1,14 +1,14 @@
 require('rootpath')()
 const express = require('express')
 const app = express()
-var morgan = require('morgan')
+var morganBody = require('morgan-body')
 var sql = require("./db");
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const basicAuth = require('_helpers/basic-auth')
 const errorHandler = require('_helpers/error-handler')
 
-app.use(morgan('combined'))
+morganBody(app);
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
