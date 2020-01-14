@@ -23,6 +23,7 @@ module.exports = {
     authenticate,
     register,
     getAll,
+    getUserByName,
 };
 
 async function populateUsers() {
@@ -165,4 +166,14 @@ async function getAll() {
         const { password, ...userWithoutPassword } = u;
         return userWithoutPassword;
     });
+}
+
+async function getUserByName(username) {
+    await populateUsers();
+    const user = users.find(u => u.username === username);
+    if (user) {
+        console.log("getUserByName found " + user.username);
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    }
 }

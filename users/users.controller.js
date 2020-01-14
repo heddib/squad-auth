@@ -5,6 +5,7 @@ const userService = require('./user.service');
 // routes
 router.post('/authenticate', authenticate);
 router.post('/register', register);
+router.get('/:name', getUserByName);
 router.get('/', getAll);
 
 module.exports = router;
@@ -24,5 +25,11 @@ function register(req, res, next) {
 function getAll(req, res, next) {
     userService.getAll()
         .then(users => res.json(users))
+        .catch(err => next(err));
+}
+
+function getUserByName(req, res, next) {
+    userService.getUserByName(req.params.name)
+        .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username not found' }))
         .catch(err => next(err));
 }
