@@ -87,6 +87,7 @@ async function register(user) {
         lastname: "required",
         password: "required|confirmed",
         password_confirmation: "required",
+        type: "required|in:Étudiant,Professionnel",
     };
 
     const messages = {
