@@ -122,7 +122,8 @@ async function authenticate({ username, password }) {
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       console.log("Password is ok -> canLogIn");
-      user.token = Buffer.from(username + ':' + password).toString('base64');
+      let token = username + ':' + password;
+      user.token = Buffer.from(token).toString('base64');
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
