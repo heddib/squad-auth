@@ -119,10 +119,10 @@ async function authenticate({ username, password }) {
   //console.log('Replace with : ' + bcrypt.hashSync(password, saltRounds));
 
   const user = users.find(u => u.username === username);
+  let token = username + ':' + password;
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       console.log("Password is ok -> canLogIn");
-      let token = username + ':' + password;
       user.token = Buffer.from(token).toString('base64');
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
