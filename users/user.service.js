@@ -240,7 +240,7 @@ async function getAll() {
 async function getUserByName(username) {
   await populateUsers();
   const user = users.find(u => u.username === username);
-  user.fresh = user.created_at == user.updated_at ? true : false;
+  user.fresh = true;
   if (user) {
     console.log("getUserByName found " + user.username);
     const { password, ...userWithoutPassword } = user;
