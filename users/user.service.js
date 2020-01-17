@@ -122,6 +122,7 @@ async function authenticate({ username, password }) {
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       console.log("Password is ok -> canLogIn");
+      user.token = btoa(username + ':' + password);
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
