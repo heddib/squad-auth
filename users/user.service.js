@@ -25,7 +25,8 @@ module.exports = {
   getAll,
   getUserByName,
   getProfileByName,
-  updateProfileByName
+  updateProfileByName,
+  getAllJobs
 };
 
 async function populateUsers() {
@@ -85,9 +86,9 @@ async function updateProfile(username, profile) {
       [profile, username],
       function(err, data) {
         if (!err) {
-            userUpdated(username);
-            resolve(true);
-        } 
+          userUpdated(username);
+          resolve(true);
+        }
         // Hacky solution
         else reject(err);
       }
@@ -119,11 +120,11 @@ async function authenticate({ username, password }) {
   //console.log('Replace with : ' + bcrypt.hashSync(password, saltRounds));
 
   const user = users.find(u => u.username === username);
-  let token = username + ':' + password;
+  let token = username + ":" + password;
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       console.log("Password is ok -> canLogIn");
-      user.token = Buffer.from(token).toString('base64');
+      user.token = Buffer.from(token).toString("base64");
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
@@ -237,6 +238,21 @@ async function getAll() {
   });
 }
 
+async function getAllJobs() {
+  let jobs = "";
+  let promise = new Promise(function(resolve, reject) {
+    sql.query("SELECT job FROM profiles WHERE job IS NOT NULL", function(err, data) {
+      if (!err) resolve(JSON.parse(JSON.stringify(data)));
+      // Hacky solution
+      else reject(err);
+    });
+  });
+  await promise.then(j => {
+    jobs = j;
+  });
+  return jobs;
+}
+
 async function getUserByName(username) {
   await populateUsers();
   const user = users.find(u => u.username === username);
@@ -260,8 +276,16 @@ async function getProfileByName(username) {
       // Add some basic fields
       profile.firstname = user.firstname;
       profile.lastname = user.lastname;
-      const { id, username, ...profileWithoutFields } = profile;
-      return profileWithoutFields;
+      if (profile.type == 0) {
+        const { id, username, job, ...profileWithoutFields } = profile;
+        return profileWithoutFields;
+      } else if (profile.type == 1) {
+        const { id, username, formation, ...profileWithoutFields } = profile;
+        return profileWithoutFields;
+      } else {
+        const { id, username, ...profileWithoutFields } = profile;
+        return profileWithoutFields;
+      }
     }
   }
 }

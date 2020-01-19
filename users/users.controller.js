@@ -10,6 +10,7 @@ router.get("/", getAll);
 // profile
 router.get("/:name/profile", getProfileByName);
 router.put("/:name/profile", updateProfileByName);
+router.get("/profiles/jobs", getAllJobs);
 
 module.exports = router;
 
@@ -39,6 +40,13 @@ function getAll(req, res, next) {
     .then(users => res.json(users))
     .catch(err => next(err));
 }
+
+function getAllJobs(req, res, next) {
+    userService
+      .getAllJobs()
+      .then(jobs => res.json(jobs))
+      .catch(err => next(err));
+  }
 
 function getUserByName(req, res, next) {
   userService
