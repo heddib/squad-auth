@@ -11,6 +11,7 @@ router.get("/", getAll);
 router.get("/:name/profile", getProfileByName);
 router.put("/:name/profile", updateProfileByName);
 router.get("/profiles/jobs", getAllJobs);
+router.get("/profiles/job/:job", getProfilesByJob);
 
 module.exports = router;
 
@@ -41,12 +42,19 @@ function getAll(req, res, next) {
     .catch(err => next(err));
 }
 
+function getProfilesByJob(req, res, next) {
+  userService
+    .getProfilesByJob(req.params.job)
+    .then(profiles => res.json(profiles))
+    .catch(err => next(err));
+}
+
 function getAllJobs(req, res, next) {
-    userService
-      .getAllJobs()
-      .then(jobs => res.json(jobs))
-      .catch(err => next(err));
-  }
+  userService
+    .getAllJobs()
+    .then(jobs => res.json(jobs))
+    .catch(err => next(err));
+}
 
 function getUserByName(req, res, next) {
   userService

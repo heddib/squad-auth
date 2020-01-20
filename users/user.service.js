@@ -26,7 +26,8 @@ module.exports = {
   getUserByName,
   getProfileByName,
   updateProfileByName,
-  getAllJobs
+  getAllJobs,
+  getProfilesByJob
 };
 
 async function populateUsers() {
@@ -238,10 +239,31 @@ async function getAll() {
   });
 }
 
+async function getProfilesByJob(job) {
+  let profiles = "";
+  let promise = new Promise(function(resolve, reject) {
+    sql.query("SELECT * FROM profiles WHERE job = ?", job, function(
+      err,
+      data
+    ) {
+      if (!err) resolve(JSON.parse(JSON.stringify(data)));
+      // Hacky solution
+      else reject(err);
+    });
+  });
+  await promise.then(p => {
+    profiles = p;
+  });
+  return profiles;
+}
+
 async function getAllJobs() {
   let jobs = "";
   let promise = new Promise(function(resolve, reject) {
-    sql.query("SELECT job FROM profiles WHERE job IS NOT NULL", function(err, data) {
+    sql.query("SELECT job FROM profiles WHERE job IS NOT NULL", function(
+      err,
+      data
+    ) {
       if (!err) resolve(JSON.parse(JSON.stringify(data)));
       // Hacky solution
       else reject(err);
@@ -256,7 +278,7 @@ async function getAllJobs() {
 async function getUserByName(username) {
   await populateUsers();
   const user = users.find(u => u.username === username);
-  user.fresh = user.created_at == user.updated_at ? true : false;
+  //user.fresh = user.created_at == user.updated_at ? true : false;
   if (user) {
     console.log("getUserByName found " + user.username);
     const { password, ...userWithoutPassword } = user;
@@ -276,10 +298,10 @@ async function getProfileByName(username) {
       // Add some basic fields
       profile.firstname = user.firstname;
       profile.lastname = user.lastname;
-      if (profile.type == 0) {
+      if (user.type == 0) {
         const { id, username, job, ...profileWithoutFields } = profile;
         return profileWithoutFields;
-      } else if (profile.type == 1) {
+      } else if (user.type == 1) {
         const { id, username, formation, ...profileWithoutFields } = profile;
         return profileWithoutFields;
       } else {
